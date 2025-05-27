@@ -12,6 +12,7 @@
         <h1>Meu codex</h1>
         <p>Meu local de organização</p>
         <p id="pontos">Pontos: 0</p>
+        <button onclick="logout()">Sair</button>
     </header>
 
     <div id="login-container">
@@ -44,6 +45,11 @@
             <ul id="tarefas-diarias"></ul>
             <input type="text" id="nova-tarefa-diaria" placeholder="Nova tarefa diária">
             <button onclick="adicionarTarefaDiaria()">Adicionar Tarefa Diária</button>
+            <button onclick="mostrarGerenciarTarefas()">Gerenciar Tarefas Diárias</button>
+            <div id="gerenciar-tarefas" style="display: none;">
+                <h4>Remover Tarefas Diárias</h4>
+                <ul id="lista-tarefas-gerenciar"></ul>
+            </div>
         </div>
 
         <div class="fixed-section">

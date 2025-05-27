@@ -1,16 +1,3 @@
-// Lista de tarefas diárias
-const tarefasDiarias = [
-    "Dar comida para os cachorros (dia)",
-    "Dar comida para os cachorros (noite)",
-    "Lavar a louça (dia)",
-    "Lavar a louça (noite)",
-    "Programar no Codex",
-    "Estudar C",
-    "Tomar Creatina",
-    "Remedio tireoide",
-    "Remedio cachorro",
-];
-
 // Sistema de usuários
 function getUsers() {
     return JSON.parse(localStorage.getItem('codexUsers')) || [];
@@ -18,6 +5,15 @@ function getUsers() {
 
 function saveUsers(users) {
     localStorage.setItem('codexUsers', JSON.stringify(users));
+}
+
+function getCurrentUser() {
+    return localStorage.getItem('currentUser');
+}
+
+function getUserKey(key) {
+    const user = getCurrentUser();
+    return user ? `${key}_${user}` : key;
 }
 
 function loadUserList() {
@@ -79,6 +75,14 @@ function registerUser() {
     users.push({ username, password });
     saveUsers(users);
     
+    // Inicializa dados do novo usuário
+    localStorage.setItem(`tarefasPermanentes_${username}`, JSON.stringify([]));
+    localStorage.setItem(`tarefasDiarias_${username}`, JSON.stringify([]));
+    localStorage.setItem(`notas_${username}`, JSON.stringify([]));
+    localStorage.setItem(`tarefasAdicionais_${username}`, JSON.stringify([]));
+    localStorage.setItem(`links_${username}`, JSON.stringify([]));
+    localStorage.setItem(`pontos_${username}`, '0');
+    
     document.getElementById('new-username').value = '';
     document.getElementById('new-password').value = '';
     
@@ -122,23 +126,28 @@ function logout() {
     document.querySelector('.drawer-container').style.display = 'none';
     document.getElementById('username').value = '';
     document.getElementById('password').value = '';
+    document.getElementById('gerenciar-tarefas').style.display = 'none';
 }
 
 // Função para carregar as tarefas diárias
 function carregarTarefasDiarias() {
     const hoje = new Date().toLocaleDateString();
-    const ultimaAtualizacao = localStorage.getItem('ultimaAtualizacao');
+    const user = getCurrentUser();
+    const ultimaAtualizacao = localStorage.getItem(getUserKey('ultimaAtualizacao'));
+
+    // Carrega a lista de tarefas permanentes do usuário
+    const tarefasPermanentes = JSON.parse(localStorage.getItem(getUserKey('tarefasPermanentes'))) || [];
 
     if (ultimaAtualizacao !== hoje) {
-        const tarefas = tarefasDiarias.map(tarefa => ({
+        const tarefas = tarefasPermanentes.map(tarefa => ({
             tarefa,
             concluida: false
         }));
-        localStorage.setItem('tarefasDiarias', JSON.stringify(tarefas));
-        localStorage.setItem('ultimaAtualizacao', hoje);
+        localStorage.setItem(getUserKey('tarefasDiarias'), JSON.stringify(tarefas));
+        localStorage.setItem(getUserKey('ultimaAtualizacao'), hoje);
     }
 
-    const tarefas = JSON.parse(localStorage.getItem('tarefasDiarias')) || [];
+    const tarefas = JSON.parse(localStorage.getItem(getUserKey('tarefasDiarias'))) || [];
     const lista = document.getElementById('tarefas-diarias');
     lista.innerHTML = '';
 
@@ -164,13 +173,13 @@ function carregarTarefasDiarias() {
 }
 
 function marcarTarefa(index) {
-    const tarefas = JSON.parse(localStorage.getItem('tarefasDiarias')) || [];
+    const tarefas = JSON.parse(localStorage.getItem(getUserKey('tarefasDiarias'))) || [];
     if (!tarefas[index].concluida) {
         tarefas[index].concluida = true;
-        const pontosAtuais = parseInt(localStorage.getItem('pontos')) || 0;
-        localStorage.setItem('pontos', pontosAtuais + 10);
+        const pontosAtuais = parseInt(localStorage.getItem(getUserKey('pontos'))) || 0;
+        localStorage.setItem(getUserKey('pontos'), pontosAtuais + 10);
     }
-    localStorage.setItem('tarefasDiarias', JSON.stringify(tarefas));
+    localStorage.setItem(getUserKey('tarefasDiarias'), JSON.stringify(tarefas));
     carregarTarefasDiarias();
     atualizarPontos();
 }
@@ -178,25 +187,86 @@ function marcarTarefa(index) {
 function adicionarTarefaDiaria() {
     const novaTarefa = document.getElementById('nova-tarefa-diaria').value.trim();
     if (novaTarefa !== '') {
-        const tarefas = JSON.parse(localStorage.getItem('tarefasDiarias')) || [];
-        tarefas.push({
-            tarefa: novaTarefa,
-            concluida: false
-        });
-        localStorage.setItem('tarefasDiarias', JSON.stringify(tarefas));
+        // Adiciona à lista de tarefas permanentes
+        const tarefasPermanentes = JSON.parse(localStorage.getItem(getUserKey('tarefasPermanentes'))) || [];
+        if (!tarefasPermanentes.includes(novaTarefa)) {
+            tarefasPermanentes.push(novaTarefa);
+            localStorage.setItem(getUserKey('tarefasPermanentes'), JSON.stringify(tarefasPermanentes));
+        }
+
+        // Adiciona à lista de tarefas diárias
+        const tarefas = JSON.parse(localStorage.getItem(getUserKey('tarefasDiarias'))) || [];
+        if (!tarefas.some(t => t.tarefa === novaTarefa)) {
+            tarefas.push({
+                tarefa: novaTarefa,
+                concluida: false
+            });
+            localStorage.setItem(getUserKey('tarefasDiarias'), JSON.stringify(tarefas));
+        }
         carregarTarefasDiarias();
         document.getElementById('nova-tarefa-diaria').value = '';
+        mostrarGerenciarTarefas(); // Atualiza a lista de gerenciamento
     }
 }
 
+function mostrarGerenciarTarefas() {
+    const gerenciarSection = document.getElementById('gerenciar-tarefas');
+    const listaGerenciar = document.getElementById('lista-tarefas-gerenciar');
+    listaGerenciar.innerHTML = '';
+
+    const tarefasPermanentes = JSON.parse(localStorage.getItem(getUserKey('tarefasPermanentes'))) || [];
+
+    if (tarefasPermanentes.length === 0) {
+        const li = document.createElement('li');
+        li.textContent = 'Nenhuma tarefa permanente cadastrada';
+        li.style.color = '#888';
+        listaGerenciar.appendChild(li);
+    } else {
+        tarefasPermanentes.forEach((tarefa, index) => {
+            const li = document.createElement('li');
+            const span = document.createElement('span');
+            span.textContent = tarefa;
+            const botaoExcluir = document.createElement('button');
+            botaoExcluir.textContent = 'Remover';
+            botaoExcluir.onclick = () => removerTarefaPermanente(index);
+            li.appendChild(span);
+            li.appendChild(botaoExcluir);
+            listaGerenciar.appendChild(li);
+        });
+    }
+
+    gerenciarSection.style.display = gerenciarSection.style.display === 'none' ? 'block' : 'none';
+}
+
+function removerTarefaPermanente(index) {
+    const tarefasPermanentes = JSON.parse(localStorage.getItem(getUserKey('tarefasPermanentes'))) || [];
+    const tarefaRemovida = tarefasPermanentes.splice(index, 1)[0];
+    localStorage.setItem(getUserKey('tarefasPermanentes'), JSON.stringify(tarefasPermanentes));
+
+    // Remove a tarefa das tarefas diárias, se estiver presente
+    const tarefasDiarias = JSON.parse(localStorage.getItem(getUserKey('tarefasDiarias'))) || [];
+    const indexDiaria = tarefasDiarias.findIndex(t => t.tarefa === tarefaRemovida);
+    if (indexDiaria !== -1) {
+        tarefasDiarias.splice(indexDiaria, 1);
+        localStorage.setItem(getUserKey('tarefasDiarias'), JSON.stringify(tarefasDiarias));
+    }
+
+    mostrarGerenciarTarefas();
+    carregarTarefasDiarias();
+}
+
 function carregarDados() {
-    const notas = JSON.parse(localStorage.getItem('notas')) || [];
-    const tarefasAdicionais = JSON.parse(localStorage.getItem('tarefasAdicionais')) || [];
-    const links = JSON.parse(localStorage.getItem('links')) || [];
+    const notas = JSON.parse(localStorage.getItem(getUserKey('notas'))) || [];
+    const tarefasAdicionais = JSON.parse(localStorage.getItem(getUserKey('tarefasAdicionais'))) || [];
+    const links = JSON.parse(localStorage.getItem(getUserKey('links'))) || [];
 
     const listaNotas = document.getElementById('lista-notas');
     const listaTarefasAdicionais = document.getElementById('lista-tarefas-adicionais');
     const listaLinks = document.getElementById('lista-links');
+
+    listaNotas.innerHTML = '';
+    listaTarefasAdicionais.innerHTML = '';
+    listaLinks.innerHTML = '';
 
     notas.forEach((nota, index) => {
         const item = criarItemComBotao(nota, index, 'notas');
@@ -237,13 +307,13 @@ function criarItemComBotao(conteudo, index, tipo, isLink = false) {
 }
 
 function excluirItem(index, tipo) {
-    const dados = JSON.parse(localStorage.getItem(tipo)) || [];
+    const dados = JSON.parse(localStorage.getItem(getUserKey(tipo))) || [];
     dados.splice(index, 1);
-    localStorage.setItem(tipo, JSON.stringify(dados));
+    localStorage.setItem(getUserKey(tipo), JSON.stringify(dados));
 
     if (tipo === 'tarefasAdicionais') {
-        const pontosAtuais = parseInt(localStorage.getItem('pontos')) || 0;
-        localStorage.setItem('pontos', pontosAtuais + 5);
+        const pontosAtuais = parseInt(localStorage.getItem(getUserKey('pontos'))) || 0;
+        localStorage.setItem(getUserKey('pontos'), pontosAtuais + 5);
         atualizarPontos();
     }
 
@@ -264,7 +334,7 @@ function atualizarLista(tipo) {
 
     lista.innerHTML = '';
 
-    const dados = JSON.parse(localStorage.getItem(tipo)) || [];
+    const dados = JSON.parse(localStorage.getItem(getUserKey(tipo))) || [];
     dados.forEach((conteudo, index) => {
         const item = criarItemComBotao(conteudo, index, tipo, tipo === 'links');
         lista.appendChild(item);
@@ -274,9 +344,9 @@ function atualizarLista(tipo) {
 function adicionarNota() {
     const nota = document.getElementById('nova-nota').value.trim();
     if (nota !== '') {
-        const notas = JSON.parse(localStorage.getItem('notas')) || [];
+        const notas = JSON.parse(localStorage.getItem(getUserKey('notas'))) || [];
         notas.push(nota);
-        localStorage.setItem('notas', JSON.stringify(notas));
+        localStorage.setItem(getUserKey('notas'), JSON.stringify(notas));
         atualizarLista('notas');
         document.getElementById('nova-nota').value = '';
     }
@@ -285,10 +355,10 @@ function adicionarNota() {
 function adicionarTarefaAdicional() {
     const tarefa = document.getElementById('nova-tarefa-adicional').value.trim();
     if (tarefa !== '') {
-        const tarefasAdicionais = JSON.parse(localStorage.getItem('tarefasAdicionais')) || [];
+        const tarefasAdicionais = JSON.parse(localStorage.getItem(getUserKey('tarefasAdicionais'))) || [];
         tarefasAdicionais.push(tarefa);
-        localStorage.setItem('tarefasAdicionais', JSON.stringify(tarefasAdicionais));
-        atualizarLista('tarefasAdicionais');
+        localStorage.setItem(getUserKey('tarefasAdicionais'), JSON.stringify(tarefasAdicionais));
+        atualizarLista(tarefasAdicionais);
         document.getElementById('nova-tarefa-adicional').value = '';
     }
 }
@@ -296,9 +366,9 @@ function adicionarTarefaAdicional() {
 function adicionarLink() {
     const link = document.getElementById('novo-link').value.trim();
     if (link !== '') {
-        const links = JSON.parse(localStorage.getItem('links')) || [];
+        const links = JSON.parse(localStorage.getItem(getUserKey('links'))) || [];
         links.push(link);
-        localStorage.setItem('links', JSON.stringify(links));
+        localStorage.setItem(getUserKey('links'), JSON.stringify(links));
         atualizarLista('links');
         document.getElementById('novo-link').value = '';
     }
@@ -407,12 +477,8 @@ function ajustarTamanhoTela() {
     generateCalendar();
 }
 
-if (!localStorage.getItem('pontos')) {
-    localStorage.setItem('pontos', '0');
-}
-
 function atualizarPontos() {
-    const pontos = localStorage.getItem('pontos') || '0';
+    const pontos = localStorage.getItem(getUserKey('pontos')) || '0';
     document.getElementById('pontos').textContent = `Pontos: ${pontos}`;
 }
 
@@ -425,6 +491,12 @@ window.onload = () => {
     const users = getUsers();
     if (users.length === 0) {
         saveUsers([{ username: 'ParakeetPH12', password: '157751' }]);
+        localStorage.setItem('tarefasPermanentes_ParakeetPH12', JSON.stringify([]));
+        localStorage.setItem('tarefasDiarias_ParakeetPH12', JSON.stringify([]));
+        localStorage.setItem('notas_ParakeetPH12', JSON.stringify([]));
+        localStorage.setItem('tarefasAdicionais_ParakeetPH12', JSON.stringify([]));
+        localStorage.setItem('links_ParakeetPH12', JSON.stringify([]));
+        localStorage.setItem('pontos_ParakeetPH12', '0');
         loadUserList();
     }
     

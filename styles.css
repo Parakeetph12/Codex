@@ -33,7 +33,7 @@ header {
     text-shadow: 0 0 10px #0066ff, 0 0 20px #0066ff;
 }
 
-h1, h2, h3 {
+h1, h2, h3, h4 {
     color: #0066ff;
     text-shadow: 0 0 10px #0066ff, 0 0 20px #0066ff;
 }
@@ -311,4 +311,18 @@ input[type="range"] {
     font-size: 16px;
     color: #0066ff;
     text-shadow: 0 0 5px #0066ff;
+}
+
+/* Estilos para gerenciar tarefas diárias */
+#gerenciar-tarefas {
+    margin-top: 10px;
+    padding: 10px;
+    border: 1px solid #0066ff;
+    border-radius: 5px;
+}
+
+#lista-tarefas-gerenciar li {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
 }
