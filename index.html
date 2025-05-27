@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Meu codex</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="script.js" defer></script>
+</head>
+<body>
+    <header>
+        <h1>Meu codex</h1>
+        <p>Meu local de organização</p>
+        <p id="pontos">Pontos: 0</p>
+    </header>
+
+    <div id="login-container">
+        <h2>Login</h2>
+        <div id="login-form">
+            <h3>Usuários cadastrados:</h3>
+            <ul id="user-list"></ul>
+
+            <label for="username">Usuário:</label>
+            <input type="text" id="username" placeholder="Digite seu usuário">
+            <label for="password">Senha:</label>
+            <input type="password" id="password" placeholder="Digite sua senha">
+            <button onclick="login()">Entrar</button>
+            <p id="login-error">Usuário ou senha incorretos.</p>
+
+            <div id="new-user-section">
+                <h3>Cadastrar novo usuário:</h3>
+                <input type="text" id="new-username" placeholder="Novo usuário">
+                <input type="password" id="new-password" placeholder="Nova senha">
+                <button onclick="registerUser()">Cadastrar</button>
+                <p id="register-error"></p>
+                <p id="register-success">Usuário cadastrado com sucesso!</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="main-sections">
+        <div class="fixed-section">
+            <h3>Tarefas Diárias</h3>
+            <ul id="tarefas-diarias"></ul>
+            <input type="text" id="nova-tarefa-diaria" placeholder="Nova tarefa diária">
+            <button onclick="adicionarTarefaDiaria()">Adicionar Tarefa Diária</button>
+        </div>
+
+        <div class="fixed-section">
+            <h3>Minhas Notas</h3>
+            <ul id="lista-notas"></ul>
+            <input type="text" id="nova-nota" placeholder="Nova nota">
+            <button onclick="adicionarNota()">Adicionar Nota</button>
+        </div>
+
+        <div class="fixed-section">
+            <h3>Tarefas Adicionais</h3>
+            <ul id="lista-tarefas-adicionais"></ul>
+            <input type="text" id="nova-tarefa-adicional" placeholder="Nova tarefa">
+            <button onclick="adicionarTarefaAdicional()">Adicionar Tarefa</button>
+        </div>
+
+        <div class="fixed-section">
+            <h3>Links Importantes</h3>
+            <ul id="lista-links"></ul>
+            <input type="text" id="novo-link" placeholder="Novo link">
+            <button onclick="adicionarLink()">Adicionar Link</button>
+        </div>
+    </div>
+
+    <div class="drawer-container">
+        <div class="drawer-header" onclick="toggleDrawer()">
+            <h2>Calendário</h2>
+            <span id="drawer-arrow">▼</span>
+        </div>
+        <div id="drawer-content" class="drawer-content">
+            <div id="calendar-controls" class="drawer-controls">
+                <div class="drawer-control-group">
+                    <button onclick="previousMonth()">Mês Anterior</button>
+                    <span id="calendar-month-year"></span>
+                    <button onclick="nextMonth()">Próximo Mês</button>
+                </div>
+                <div class="drawer-control-group">
+                    <label for="largura-tela">Largura:</label>
+                    <input type="number" id="largura-tela" value="800" min="300" max="2000">
+                </div>
+                <div class="drawer-control-group">
+                    <label for="altura-tela">Altura:</label>
+                    <input type="number" id="altura-tela" value="500" min="200" max="1000">
+                </div>
+                <div class="drawer-buttons">
+                    <button onclick="ajustarTamanhoTela()">Redimensionar</button>
+                </div>
+            </div>
+            <div id="calendar" class="calendar"></div>
+        </div>
+    </div>
+</body>
+</html>

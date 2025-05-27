@@ -1,0 +1,314 @@
+#tarefas-diarias {
+    flex: 1;
+    overflow-y: auto;
+    padding: 0;
+    margin: 0;
+    list-style: none;
+}
+
+#tarefas-diarias li {
+    display: flex;
+    align-items: center;
+    background-color: #000000;
+    color: #ffffff;
+    margin: 0;
+    padding: 10px;
+    border-radius: 5px;
+    box-shadow: 0 0 5px #0066ff, 0 0 10px #0066ff;
+}
+
+body {
+    font-family: 'Arial', sans-serif;
+    background-color: #000000;
+    color: #ffffff;
+    margin: 0;
+    padding: 0;
+}
+
+header {
+    background-color: #000000;
+    color: #0066ff;
+    padding: 20px;
+    text-align: center;
+    text-shadow: 0 0 10px #0066ff, 0 0 20px #0066ff;
+}
+
+h1, h2, h3 {
+    color: #0066ff;
+    text-shadow: 0 0 10px #0066ff, 0 0 20px #0066ff;
+}
+
+.main-sections {
+    display: none;
+    justify-content: space-between;
+    padding: 20px;
+    gap: 20px;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+}
+
+.fixed-section {
+    flex: 1;
+    min-width: 250px;
+    background-color: #000000;
+    border: 1px solid #0066ff;
+    border-radius: 10px;
+    padding: 15px;
+    box-shadow: 0 0 10px #0066ff, 0 0 20px #0066ff;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    height: fit-content;
+}
+
+ul {
+    list-style-type: none;
+    padding: 0;
+    max-height: 200px;
+    overflow-y: auto;
+}
+
+ul li {
+    background: #000000;
+    color: #ffffff;
+    margin: 5px 0;
+    padding: 10px;
+    border-radius: 5px;
+    box-shadow: 0 0 5px #ffffff, 0 0 10px #ffffff;
+}
+
+input[type="text"],
+input[type="password"],
+input[type="number"] {
+    background-color: #000000;
+    color: #ffffff;
+    border: 1px solid #0066ff;
+    border-radius: 5px;
+    padding: 10px;
+    width: calc(100% - 22px);
+    margin-bottom: 10px;
+    box-shadow: 0 0 5px #0066ff, 0 0 10px #0066ff;
+}
+
+button {
+    background-color: #5293f5;
+    color: #ffffff;
+    border: none;
+    padding: 10px 20px;
+    cursor: pointer;
+    border-radius: 5px;
+    text-shadow: 0 0 5px #ffffff, 0 0 10px #ffffff;
+    box-shadow: 0 0 10px #0066ff, 0 0 20px #0066ff;
+    transition: all 0.3s ease;
+}
+
+button:hover {
+    background-color: #0066ff;
+    box-shadow: 0 0 15px #0066ff, 0 0 30px #0066ff;
+}
+
+.drawer-container {
+    width: calc(100% - 40px);
+    margin: 20px;
+    display: none;
+}
+
+.drawer-header {
+    background-color: #000000;
+    color: #0066ff;
+    padding: 10px 15px;
+    border: 1px solid #0066ff;
+    border-radius: 5px;
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 0 5px #0066ff;
+}
+
+.drawer-content {
+    display: none;
+    padding: 15px;
+    background-color: #000000;
+    border: 1px solid #0066ff;
+    border-top: none;
+    border-radius: 0 0 5px 5px;
+}
+
+.drawer-content.active {
+    display: block;
+}
+
+.drawer-controls {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 10px;
+}
+
+.drawer-control-group {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+label {
+    color: #ffffff;
+    font-size: 14px;
+}
+
+select,
+input[type="range"] {
+    background-color: #000000;
+    color: #ffffff;
+    border: 1px solid #0066ff;
+    padding: 5px;
+    border-radius: 3px;
+}
+
+.drawer-buttons {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+    margin-top: 10px;
+}
+
+/* Estilos para a tela de login */
+#login-container {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: #000000;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 0 10px #0066ff;
+    width: 400px;
+    max-width: 90%;
+}
+
+#login-form {
+    display: flex;
+    flex-direction: column;
+}
+
+#login-form input {
+    margin-bottom: 10px;
+    padding: 8px;
+}
+
+#user-list {
+    margin-bottom: 15px;
+    max-height: 150px;
+    overflow-y: auto;
+    border: 1px solid #0066ff;
+    border-radius: 5px;
+    padding: 5px;
+}
+
+#user-list li {
+    padding: 8px;
+    cursor: pointer;
+    border-radius: 3px;
+    margin-bottom: 3px;
+    transition: background-color 0.2s;
+}
+
+#user-list li:hover {
+    background-color: #0066ff33;
+}
+
+#new-user-section {
+    margin-top: 15px;
+    border-top: 1px solid #0066ff;
+    padding-top: 15px;
+}
+
+#login-error,
+#register-error {
+    color: red;
+    display: none;
+    text-align: center;
+}
+
+#register-success {
+    color: #00ff00;
+    display: none;
+    text-align: center;
+}
+
+@media (max-width: 1200px) {
+    .main-sections {
+        flex-wrap: nowrap;
+        overflow-x: auto;
+    }
+
+    .fixed-section {
+        flex: 0 0 auto;
+        min-width: 300px;
+    }
+}
+
+/* Calendar Styles */
+.calendar {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 2px;
+    background-color: #000000;
+    border: 2px solid #0066ff;
+    border-radius: 5px;
+    padding: 10px;
+    width: 800px;
+    height: 500px;
+    max-width: 100%;
+    box-shadow: 0 0 10px #0066ff, 0 0 20px #0066ff;
+}
+
+.calendar-day {
+    background-color: #000000;
+    color: #ffffff;
+    border: 1px solid #0066ff;
+    border-radius: 5px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.calendar-day:hover {
+    background-color: #0066ff33;
+}
+
+.calendar-day.current {
+    background-color: #0066ff;
+    box-shadow: 0 0 5px #0066ff, 0 0 10px #0066ff;
+}
+
+.calendar-day.empty {
+    background-color: transparent;
+    border: none;
+    cursor: default;
+}
+
+.calendar-header {
+    background-color: #000000;
+    color: #0066ff;
+    text-align: center;
+    padding: 10px;
+    font-weight: bold;
+}
+
+#calendar-controls {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+#calendar-month-year {
+    font-size: 16px;
+    color: #0066ff;
+    text-shadow: 0 0 5px #0066ff;
+}
