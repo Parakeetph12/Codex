@@ -3,31 +3,35 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Meu codex</title>
+    <title>Meu Codex</title>
     <link rel="stylesheet" href="styles.css">
+    <link rel="icon" type="image/png" href="https://i.postimg.cc/vZDvN61b/Logopit-1600638333146.png">
     <script src="script.js" defer></script>
 </head>
 <body>
+    <nav>
+        <a href="index.html">Início</a>
+        <a href="pagina2.html">Quadro Branco</a>
+        <a href="pagina3.html">Diário</a>
+        <a href="pagina4.html">Contato</a>
+    </nav>
     <header>
-        <h1>Meu codex</h1>
+        <h1>Meu Codex</h1>
         <p>Meu local de organização</p>
         <p id="pontos">Pontos: 0</p>
         <button onclick="logout()">Sair</button>
     </header>
-
     <div id="login-container">
         <h2>Login</h2>
         <div id="login-form">
             <h3>Usuários cadastrados:</h3>
             <ul id="user-list"></ul>
-
             <label for="username">Usuário:</label>
             <input type="text" id="username" placeholder="Digite seu usuário">
             <label for="password">Senha:</label>
             <input type="password" id="password" placeholder="Digite sua senha">
             <button onclick="login()">Entrar</button>
             <p id="login-error">Usuário ou senha incorretos.</p>
-
             <div id="new-user-section">
                 <h3>Cadastrar novo usuário:</h3>
                 <input type="text" id="new-username" placeholder="Novo usuário">
@@ -38,7 +42,6 @@
             </div>
         </div>
     </div>
-
     <div class="main-sections">
         <div class="fixed-section">
             <h3>Tarefas Diárias</h3>
@@ -51,21 +54,18 @@
                 <ul id="lista-tarefas-gerenciar"></ul>
             </div>
         </div>
-
         <div class="fixed-section">
             <h3>Minhas Notas</h3>
             <ul id="lista-notas"></ul>
             <input type="text" id="nova-nota" placeholder="Nova nota">
             <button onclick="adicionarNota()">Adicionar Nota</button>
         </div>
-
         <div class="fixed-section">
             <h3>Tarefas Adicionais</h3>
             <ul id="lista-tarefas-adicionais"></ul>
             <input type="text" id="nova-tarefa-adicional" placeholder="Nova tarefa">
             <button onclick="adicionarTarefaAdicional()">Adicionar Tarefa</button>
         </div>
-
         <div class="fixed-section">
             <h3>Links Importantes</h3>
             <ul id="lista-links"></ul>
@@ -73,7 +73,6 @@
             <button onclick="adicionarLink()">Adicionar Link</button>
         </div>
     </div>
-
     <div class="drawer-container">
         <div class="drawer-header" onclick="toggleDrawer()">
             <h2>Calendário</h2>

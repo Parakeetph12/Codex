@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Diário - Meu Codex</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="icon" type="image/png" href="https://i.postimg.cc/vZDvN61b/Logopit-1600638333146.png">
+    <script src="script.js" defer></script>
+</head>
+<body>
+    <nav>
+        <a href="index.html">Início</a>
+        <a href="pagina2.html">Quadro Branco</a>
+        <a href="pagina3.html">Diário</a>
+        <a href="pagina4.html">Contato</a>
+    </nav>
+    <header>
+        <h1>Diário</h1>
+        <p>Escreva suas anotações.</p>
+    </header>
+    <div class="fixed-section">
+        <h3>Minhas Anotações</h3>
+        <textarea id="diario-texto" placeholder="Escreva sua anotação aqui..."></textarea>
+        <button onclick="salvarAnotacao()">Salvar Anotação</button>
+        <ul id="lista-anotacoes"></ul>
+    </div>
+</body>
+</html>
