@@ -71,6 +71,52 @@ function registerUser() {
     setTimeout(() => registerSuccess.style.display = 'none', 2000);
     loadUserList();
 }
+
+// === NOVAS FUNÇÕES DE AUTENTICAÇÃO ===
+
+// Função para verificar estado de autenticação
+function checkAuthState() {
+    const currentUser = getCurrentUser();
+    const loginContainer = document.getElementById('login-container');
+    const mainSections = document.querySelector('.main-sections');
+    const drawerContainer = document.querySelector('.drawer-container');
+    const nav = document.querySelector('nav');
+    
+    if (currentUser) {
+        // Usuário está logado - mostrar conteúdo
+        if (loginContainer) loginContainer.style.display = 'none';
+        if (mainSections) mainSections.style.display = 'flex';
+        if (drawerContainer) drawerContainer.style.display = 'block';
+        if (nav) nav.style.display = 'flex';
+        loadAll(); // Carregar dados do usuário
+    } else {
+        // Usuário não está logado - mostrar login
+        if (loginContainer) loginContainer.style.display = 'block';
+        if (mainSections) mainSections.style.display = 'none';
+        if (drawerContainer) drawerContainer.style.display = 'none';
+        if (nav) nav.style.display = 'none';
+    }
+}
+
+// Verificação de autenticação para páginas sem login
+function checkPageAuth() {
+    const currentUser = getCurrentUser();
+    const hasLoginContainer = document.getElementById('login-container');
+    
+    // Se é uma página sem login container mas usuário não está logado
+    if (!hasLoginContainer && !currentUser) {
+        window.location.href = 'index.html';
+        return false;
+    }
+    
+    // Se é a página inicial com login container
+    if (hasLoginContainer && currentUser) {
+        checkAuthState();
+    }
+    
+    return true;
+}
+
 function login() {
     const username = document.getElementById('username')?.value.trim();
     const password = document.getElementById('password')?.value.trim();
@@ -78,21 +124,18 @@ function login() {
     loginError.style.display = 'none';
     const users = getUsers();
     const user = users.find(u => u.username === username && u.password === password);
+    
     if (user) {
-        document.querySelector('.main-sections').style.display = 'flex';
-        document.querySelector('.drawer-container').style.display = 'block';
-        document.getElementById('login-container').style.display = 'none';
         localStorage.setItem('currentUser', username);
-        loadAll();
+        checkAuthState(); // Usar a nova função
     } else {
         loginError.style.display = 'block';
     }
 }
+
 function logout() {
     localStorage.removeItem('currentUser');
-    document.getElementById('login-container').style.display = 'block';
-    document.querySelector('.main-sections').style.display = 'none';
-    document.querySelector('.drawer-container').style.display = 'none';
+    checkAuthState(); // Usar a nova função
     document.getElementById('username').value = '';
     document.getElementById('password').value = '';
     document.getElementById('gerenciar-tarefas').style.display = 'none';
@@ -512,17 +555,18 @@ window.onload = () => {
         localStorage.setItem('pontos_ParakeetPH12', '0');
         loadUserList();
     }
-    if (document.getElementById('login-container')) {
-        document.getElementById('login-container').style.display = 'block';
-        document.querySelector('.main-sections').style.display = 'none';
-        document.querySelector('.drawer-container').style.display = 'none';
-    }
+    
+    // VERIFICAÇÃO DE AUTENTICAÇÃO - CORRIGIDA
+    checkPageAuth();
+    
+    // Inicializações específicas de cada página
     initWhiteboard();
     carregarAnotacoes();
-    loadAll();
+    
     if (document.getElementById('calendar')) {
         generateCalendar();
     }
+    
     window.addEventListener('resize', () => {
         if (document.getElementById('drawer-content')?.classList.contains('active')) {
             const calendar = document.getElementById('calendar');
