@@ -20,15 +20,27 @@
         <p>Desenhe livremente.</p>
     </header>
     <div class="fixed-section">
-        <h3>Ferramentas de Desenho</h3>
-        <div class="drawing-tools">
-            <button onclick="setColor('red')">Vermelho</button>
-            <button onclick="setColor('blue')">Azul</button>
-            <button onclick="setColor('green')">Verde</button>
-            <button onclick="setEraser()">Borracha</button>
-            <button onclick="clearCanvas()">Limpar Tudo</button>
-        </div>
-        <canvas id="whiteboard" width="800" height="600"></canvas>
+
+    <h3>Ferramentas de Desenho</h3>
+    <div class="drawing-tools">
+        <button onclick="setColor('red')">Vermelho</button>
+        <button onclick="setColor('blue')">Azul</button>
+        <button onclick="setColor('green')">Verde</button>
+        <button onclick="setColor('black')">Preto</button>
+        <button onclick="setEraser()">Borracha</button>
+        <button onclick="clearCanvas()">Limpar Tudo</button>
+        <button onclick="adjustCanvasSize()">Ajustar Tamanho</button>
     </div>
+    <div class="whiteboard-container">
+        <canvas id="whiteboard" width="1200" height="800"></canvas>
+    </div>
+    <div class="canvas-controls">
+        <label for="canvas-width">Largura:</label>
+        <input type="number" id="canvas-width" value="1200" min="400" max="2000">
+        <label for="canvas-height">Altura:</label>
+        <input type="number" id="canvas-height" value="800" min="300" max="1500">
+        <button onclick="resizeCanvas()">Redimensionar</button>
+    </div>
+</div>
 </body>
 </html>

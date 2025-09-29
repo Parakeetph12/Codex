@@ -309,12 +309,27 @@ nav a:hover {
     gap: 10px;
     margin-bottom: 15px;
 }
+
+
 #whiteboard {
     background-color: #ffffff;
     border: 1px solid #0066ff;
     border-radius: 5px;
     box-shadow: 0 0 10px #0066ff;
     cursor: crosshair;
+    max-width: 100%;
+    max-height: 70vh; 
+    width: 100%;
+    height: auto;
+}
+
+.whiteboard-container {
+    width: 100%;
+    overflow: auto; 
+    padding: 10px;
+    border: 1px solid #0066ff;
+    border-radius: 5px;
+    background-color: #000000;
 }
 
 #diario-texto {
@@ -359,4 +374,59 @@ input[type="email"] {
     width: calc(100% - 22px);
     margin-bottom: 10px;
     box-shadow: 0 0 5px #0066ff, 0 0 10px #0066ff;
+}
+
+.canvas-controls {
+    display: flex;
+    gap: 10px;
+    margin-top: 15px;
+    flex-wrap: wrap;
+    align-items: center;
+    padding: 10px;
+    background-color: #000000;
+    border: 1px solid #0066ff;
+    border-radius: 5px;
+}
+
+.canvas-controls label {
+    color: #ffffff;
+    font-size: 14px;
+}
+
+.canvas-controls input {
+    background-color: #000000;
+    color: #ffffff;
+    border: 1px solid #0066ff;
+    border-radius: 3px;
+    padding: 5px;
+    width: 80px;
+}
+
+.whiteboard-container {
+    max-height: 70vh;
+    overflow: auto;
+    border: 1px solid #0066ff;
+    border-radius: 5px;
+    padding: 10px;
+    background-color: #1a1a1a;
+}
+
+/* Scrollbar customizada */
+.whiteboard-container::-webkit-scrollbar {
+    width: 12px;
+    height: 12px;
+}
+
+.whiteboard-container::-webkit-scrollbar-track {
+    background: #000000;
+    border-radius: 6px;
+}
+
+.whiteboard-container::-webkit-scrollbar-thumb {
+    background: #0066ff;
+    border-radius: 6px;
+}
+
+.whiteboard-container::-webkit-scrollbar-thumb:hover {
+    background: #0044cc;
 }

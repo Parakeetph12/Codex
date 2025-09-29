@@ -430,30 +430,215 @@ function atualizarPontos() {
     }
 }
 
-// Novas funções para pagina2.html (Quadro Branco)
-let isDrawing = false;
-let currentColor = 'red';
+let canvasScale = 1;
+let canvasOffsetX = 0;
+let canvasOffsetY = 0;
+let isPanning = false;
+let lastPanPoint = { x: 0, y: 0 };
+
 function initWhiteboard() {
     const canvas = document.getElementById('whiteboard');
     if (!canvas) return;
+    
+    const container = canvas.parentElement;
+    
+    // Ajustar tamanho inicial
+    resizeCanvasToContainer();
+    
     const ctx = canvas.getContext('2d');
     ctx.lineWidth = 5;
     ctx.lineCap = 'round';
     ctx.strokeStyle = currentColor;
-    canvas.addEventListener('mousedown', (e) => {
-        isDrawing = true;
-        ctx.beginPath();
-        ctx.moveTo(e.offsetX, e.offsetY);
-    });
-    canvas.addEventListener('mousemove', (e) => {
-        if (isDrawing) {
-            ctx.lineTo(e.offsetX, e.offsetY);
-            ctx.stroke();
-        }
-    });
-    canvas.addEventListener('mouseup', () => isDrawing = false);
-    canvas.addEventListener('mouseout', () => isDrawing = false);
+    
+    // Eventos de desenho
+    canvas.addEventListener('mousedown', startDrawing);
+    canvas.addEventListener('mousemove', draw);
+    canvas.addEventListener('mouseup', stopDrawing);
+    canvas.addEventListener('mouseout', stopDrawing);
+    
+    // Eventos de pan (arrastar)
+    canvas.addEventListener('mousedown', startPan);
+    canvas.addEventListener('mousemove', pan);
+    canvas.addEventListener('mouseup', stopPan);
+    
+    // Zoom com roda do mouse
+    canvas.addEventListener('wheel', handleZoom);
 }
+
+function startDrawing(e) {
+    if (e.button !== 0) return; // Apenas botão esquerdo
+    isDrawing = true;
+    const canvas = document.getElementById('whiteboard');
+    const ctx = canvas.getContext('2d');
+    const point = getCanvasPoint(e);
+    ctx.beginPath();
+    ctx.moveTo(point.x, point.y);
+}
+
+function draw(e) {
+    if (!isDrawing) return;
+    const canvas = document.getElementById('whiteboard');
+    const ctx = canvas.getContext('2d');
+    const point = getCanvasPoint(e);
+    ctx.lineTo(point.x, point.y);
+    ctx.stroke();
+}
+
+function stopDrawing() {
+    isDrawing = false;
+}
+
+// Funções de Pan (Arrastar)
+function startPan(e) {
+    if (e.button === 1 || e.ctrlKey) { // Botão do meio ou Ctrl
+        isPanning = true;
+        const point = getCanvasPoint(e);
+        lastPanPoint = point;
+        document.getElementById('whiteboard').style.cursor = 'grabbing';
+    }
+}
+
+function pan(e) {
+    if (!isPanning) return;
+    const canvas = document.getElementById('whiteboard');
+    const point = getCanvasPoint(e);
+    const dx = point.x - lastPanPoint.x;
+    const dy = point.y - lastPanPoint.y;
+    
+    canvasOffsetX -= dx;
+    canvasOffsetY -= dy;
+    
+    lastPanPoint = point;
+    redrawCanvas();
+}
+
+function stopPan() {
+    isPanning = false;
+    document.getElementById('whiteboard').style.cursor = 'crosshair';
+}
+
+// Funções de Zoom
+function handleZoom(e) {
+    e.preventDefault();
+    const zoomIntensity = 0.1;
+    const wheel = e.deltaY < 0 ? 1 : -1;
+    const zoom = Math.exp(wheel * zoomIntensity);
+    
+    const canvas = document.getElementById('whiteboard');
+    const rect = canvas.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+    
+    // Aplicar zoom
+    canvasScale *= zoom;
+    canvasScale = Math.max(0.1, Math.min(5, canvasScale)); // Limites de zoom
+    
+    // Ajustar offset para zoom no ponto do mouse
+    canvasOffsetX -= (x / canvasScale) * (zoom - 1);
+    canvasOffsetY -= (y / canvasScale) * (zoom - 1);
+    
+    redrawCanvas();
+}
+
+// Converter coordenadas da tela para coordenadas do canvas
+function getCanvasPoint(e) {
+    const canvas = document.getElementById('whiteboard');
+    const rect = canvas.getBoundingClientRect();
+    return {
+        x: (e.clientX - rect.left - canvasOffsetX) / canvasScale,
+        y: (e.clientY - rect.top - canvasOffsetY) / canvasScale
+    };
+}
+
+// Redesenhar o canvas (para zoom/pan)
+function redrawCanvas() {
+    const canvas = document.getElementById('whiteboard');
+    const ctx = canvas.getContext('2d');
+    
+    // Salvar o estado atual do canvas
+    const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+    
+    // Aplicar transformações
+    ctx.save();
+    ctx.setTransform(1, 0, 0, 1, 0, 0); // Reset
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.restore();
+    
+    ctx.save();
+    ctx.translate(canvasOffsetX, canvasOffsetY);
+    ctx.scale(canvasScale, canvasScale);
+    
+    // Redesenhar a imagem
+    ctx.putImageData(imageData, 0, 0);
+    ctx.restore();
+}
+
+// Ajustar tamanho do canvas para o container
+function resizeCanvasToContainer() {
+    const canvas = document.getElementById('whiteboard');
+    const container = canvas.parentElement;
+    
+    canvas.width = container.clientWidth - 40;
+    canvas.height = Math.min(container.clientHeight - 150, 800);
+    
+    redrawCanvas();
+}
+
+// Redimensionar manualmente
+function resizeCanvas() {
+    const width = parseInt(document.getElementById('canvas-width').value) || 1200;
+    const height = parseInt(document.getElementById('canvas-height').value) || 800;
+    const canvas = document.getElementById('whiteboard');
+    
+    // Salvar o conteúdo atual
+    const ctx = canvas.getContext('2d');
+    const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+    
+    // Redimensionar
+    canvas.width = width;
+    canvas.height = height;
+    
+    // Restaurar o conteúdo
+    ctx.putImageData(imageData, 0, 0);
+    
+    // Resetar zoom e pan
+    canvasScale = 1;
+    canvasOffsetX = 0;
+    canvasOffsetY = 0;
+}
+
+function adjustCanvasSize() {
+    const canvas = document.getElementById('whiteboard');
+    const container = canvas.parentElement;
+    
+    canvas.width = container.clientWidth - 40;
+    canvas.height = Math.min(container.clientHeight - 150, 800);
+    
+    // Resetar zoom e pan
+    canvasScale = 1;
+    canvasOffsetX = 0;
+    canvasOffsetY = 0;
+    
+    redrawCanvas();
+}
+
+// Atualizar a função clearCanvas para funcionar com zoom/pan
+function clearCanvas() {
+    const canvas = document.getElementById('whiteboard');
+    const ctx = canvas.getContext('2d');
+    
+    ctx.save();
+    ctx.setTransform(1, 0, 0, 1, 0, 0);
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.restore();
+    
+    // Resetar zoom e pan
+    canvasScale = 1;
+    canvasOffsetX = 0;
+    canvasOffsetY = 0;
+}
+
+// Adicionar cor preta
 function setColor(color) {
     currentColor = color;
     const canvas = document.getElementById('whiteboard');
@@ -461,21 +646,6 @@ function setColor(color) {
         const ctx = canvas.getContext('2d');
         ctx.strokeStyle = color;
         ctx.globalCompositeOperation = 'source-over';
-    }
-}
-function setEraser() {
-    const canvas = document.getElementById('whiteboard');
-    if (canvas) {
-        const ctx = canvas.getContext('2d');
-        ctx.globalCompositeOperation = 'destination-out';
-        ctx.strokeStyle = 'rgba(0,0,0,1)';
-    }
-}
-function clearCanvas() {
-    const canvas = document.getElementById('whiteboard');
-    if (canvas) {
-        const ctx = canvas.getContext('2d');
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
     }
 }
 
