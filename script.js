@@ -554,25 +554,42 @@ function carregarAnotacoes() {
     const lista = document.getElementById('lista-anotacoes');
     if (!lista) return;
     lista.innerHTML = '';
+
     const anotacoes = JSON.parse(localStorage.getItem(getUserKey('anotacoes')) || '[]');
+
     anotacoes.forEach((anotacao, index) => {
         const li = document.createElement('li');
+
+       const titulo = document.createElement('h4');
+        titulo.textContent = anotacao.titulo || 'Sem título'; 
+
         const span = document.createElement('span');
         span.textContent = anotacao;
+
         const botaoExcluir = document.createElement('button');
         botaoExcluir.textContent = 'Excluir';
+
         botaoExcluir.onclick = () => excluirAnotacao(index);
+
+        li.appendChild(titulo);
         li.appendChild(span);
         li.appendChild(botaoExcluir);
         lista.appendChild(li);
     });
 }
 function salvarAnotacao() {
+    const titulo = document.getElementById('diario-titulo')?.value.trim();
     const texto = document.getElementById('diario-texto')?.value.trim();
     if (texto) {
         const anotacoes = JSON.parse(localStorage.getItem(getUserKey('anotacoes')) || '[]');
-        anotacoes.push(texto);
+        anotacoes.push({
+            titulo: titulo,
+            texto: texto,
+            data: new Date().toLocaleDateString()
+        });
         localStorage.setItem(getUserKey('anotacoes'), JSON.stringify(anotacoes));
+
+        document.getElementById('diario-titulo').value = '';
         document.getElementById('diario-texto').value = '';
         carregarAnotacoes();
     }
