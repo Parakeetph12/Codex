@@ -430,3 +430,21 @@ input[type="email"] {
 .whiteboard-container::-webkit-scrollbar-thumb:hover {
     background: #0044cc;
 }
+
+.export-btn {
+    background-color: #28a745;
+}
+
+.import-btn {
+    background-color: #17a2b8;
+}
+
+.export-btn:hover {
+    background-color: #218838;
+    box-shadow: 0 0 15px #28a745, 0 0 30px #28a745;
+}
+
+.import-btn:hover {
+    background-color: #138496;
+    box-shadow: 0 0 15px #17a2b8, 0 0 30px #17a2b8;
+}

@@ -21,6 +21,11 @@
         <p id="pontos">Pontos: 0</p>
         <button onclick="logout()">Sair</button>
     </header>
+
+<button onclick="exportarDados()" class="export-btn">Exportar Dados</button>
+<button onclick="importarDados()" class="import-btn">Importar Dados</button>
+<input type="file" id="import-file" style="display: none;" onchange="handleFileImport(event)">
+
     <div id="login-container">
         <h2>Login</h2>
         <div id="login-form">
