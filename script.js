@@ -559,38 +559,61 @@ function carregarAnotacoes() {
 
     anotacoes.forEach((anotacao, index) => {
         const li = document.createElement('li');
+        li.style.marginBottom = '15px';
+        li.style.padding = '10px';
+        li.style.border = '1px solid #0066ff';
+        li.style.borderRadius = '5px';
 
-       const titulo = document.createElement('h4');
-        titulo.textContent = anotacao.titulo || 'Sem título'; 
+        // TÍTULO
+        const titulo = document.createElement('h4');
+        titulo.textContent = anotacao.titulo || 'Sem título';
+        titulo.style.margin = '0 0 5px 0';
+        titulo.style.color = '#0066ff';
 
-        const span = document.createElement('span');
-        span.textContent = anotacao;
+        // TEXTO - CORREÇÃO AQUI!
+        const texto = document.createElement('p');
+        texto.textContent = anotacao.texto || anotacao; // Suporte a versões antigas
+        texto.style.margin = '0 0 5px 0';
+        texto.style.color = '#ffffff';
 
+        // DATA
+        const data = document.createElement('small');
+        data.textContent = anotacao.data ? `Criado em: ${anotacao.data}` : '';
+        data.style.color = '#888';
+
+        // BOTÃO EXCLUIR
         const botaoExcluir = document.createElement('button');
         botaoExcluir.textContent = 'Excluir';
-
+        botaoExcluir.style.marginLeft = '10px';
         botaoExcluir.onclick = () => excluirAnotacao(index);
 
         li.appendChild(titulo);
-        li.appendChild(span);
+        li.appendChild(texto);
+        li.appendChild(data);
         li.appendChild(botaoExcluir);
         lista.appendChild(li);
     });
 }
+
 function salvarAnotacao() {
     const titulo = document.getElementById('diario-titulo')?.value.trim();
     const texto = document.getElementById('diario-texto')?.value.trim();
-    if (texto) {
+    
+    if (texto) { // Pelo menos o texto é obrigatório
         const anotacoes = JSON.parse(localStorage.getItem(getUserKey('anotacoes')) || '[]');
         anotacoes.push({
-            titulo: titulo,
+            titulo: titulo || 'Sem título', // Garante que sempre tenha título
             texto: texto,
-            data: new Date().toLocaleDateString()
+            data: new Date().toLocaleDateString('pt-BR') // Formato correto
         });
         localStorage.setItem(getUserKey('anotacoes'), JSON.stringify(anotacoes));
 
-        document.getElementById('diario-titulo').value = '';
+        // Limpar campos
+        if (document.getElementById('diario-titulo')) {
+            document.getElementById('diario-titulo').value = '';
+        }
         document.getElementById('diario-texto').value = '';
+        
         carregarAnotacoes();
     }
 }
