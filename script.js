@@ -81,7 +81,7 @@ function checkAuthState() {
     const mainSections = document.querySelector('.main-sections');
     const drawerContainer = document.querySelector('.drawer-container');
     const nav = document.querySelector('nav');
-    
+
     if (currentUser) {
         // Usuário está logado - mostrar conteúdo
         if (loginContainer) loginContainer.style.display = 'none';
@@ -102,18 +102,18 @@ function checkAuthState() {
 function checkPageAuth() {
     const currentUser = getCurrentUser();
     const hasLoginContainer = document.getElementById('login-container');
-    
+
     // Se é uma página sem login container mas usuário não está logado
     if (!hasLoginContainer && !currentUser) {
         window.location.href = 'index.html';
         return false;
     }
-    
+
     // Se é a página inicial com login container
     if (hasLoginContainer && currentUser) {
         checkAuthState();
     }
-    
+
     return true;
 }
 
@@ -124,10 +124,10 @@ function login() {
     loginError.style.display = 'none';
     const users = getUsers();
     const user = users.find(u => u.username === username && u.password === password);
-    
+
     if (user) {
         localStorage.setItem('currentUser', username);
-        checkAuthState(); 
+        checkAuthState();
     } else {
         loginError.style.display = 'block';
     }
@@ -570,9 +570,9 @@ function carregarAnotacoes() {
         titulo.style.margin = '0 0 5px 0';
         titulo.style.color = '#0066ff';
 
-        // TEXTO - CORREÇÃO AQUI!
+        // TEXTO
         const texto = document.createElement('p');
-        texto.textContent = anotacao.texto || anotacao; // Suporte a versões antigas
+        texto.textContent = anotacao.texto || anotacao;
         texto.style.margin = '0 0 5px 0';
         texto.style.color = '#ffffff';
 
@@ -599,24 +599,21 @@ function salvarAnotacao() {
     const titulo = document.getElementById('diario-titulo')?.value.trim();
     const texto = document.getElementById('diario-texto')?.value.trim();
     
-    if (texto) { // Pelo menos o texto é obrigatório
+    if (texto) {
         const anotacoes = JSON.parse(localStorage.getItem(getUserKey('anotacoes')) || '[]');
         anotacoes.push({
-            titulo: titulo || 'Sem título', // Garante que sempre tenha título
+            titulo: titulo || 'Sem título',
             texto: texto,
-            data: new Date().toLocaleDateString('pt-BR') // Formato correto
+            data: new Date().toLocaleDateString('pt-BR')
         });
         localStorage.setItem(getUserKey('anotacoes'), JSON.stringify(anotacoes));
 
-        // Limpar campos
-        if (document.getElementById('diario-titulo')) {
-            document.getElementById('diario-titulo').value = '';
-        }
+        document.getElementById('diario-titulo').value = '';
         document.getElementById('diario-texto').value = '';
-        
         carregarAnotacoes();
     }
 }
+
 function excluirAnotacao(index) {
     const anotacoes = JSON.parse(localStorage.getItem(getUserKey('anotacoes')) || '[]');
     anotacoes.splice(index, 1);
@@ -657,6 +654,90 @@ function initWhiteboard() {
     }
 }
 
+// SISTEMA DE BACKUP/EXPORTAÇÃO
+function exportarDados() {
+    const currentUser = getCurrentUser();
+    if (!currentUser) {
+        alert('Faça login para exportar seus dados.');
+        return;
+    }
+
+    const dadosParaExportar = {
+        usuario: currentUser,
+        dataExportacao: new Date().toISOString(),
+        tarefasPermanentes: JSON.parse(localStorage.getItem(`tarefasPermanentes_${currentUser}`) || '[]'),
+        tarefasDiarias: JSON.parse(localStorage.getItem(`tarefasDiarias_${currentUser}`) || '[]'),
+        notas: JSON.parse(localStorage.getItem(`notas_${currentUser}`) || '[]'),
+        tarefasAdicionais: JSON.parse(localStorage.getItem(`tarefasAdicionais_${currentUser}`) || '[]'),
+        links: JSON.parse(localStorage.getItem(`links_${currentUser}`) || '[]'),
+        anotacoes: JSON.parse(localStorage.getItem(`anotacoes_${currentUser}`) || '[]'),
+        pontos: localStorage.getItem(`pontos_${currentUser}`) || '0'
+    };
+
+    const dadosJSON = JSON.stringify(dadosParaExportar, null, 2);
+    const blob = new Blob([dadosJSON], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `codex-backup-${currentUser}-${new Date().toISOString().split('T')[0]}.json`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+
+    alert('Dados exportados com sucesso!');
+}
+
+function importarDados() {
+    const fileInput = document.getElementById('import-file');
+    fileInput.click();
+
+    fileInput.onchange = function(e) {
+        const file = e.target.files[0];
+        if (!file) return;
+
+        const reader = new FileReader();
+        reader.onload = function(event) {
+            try {
+                const dadosImportados = JSON.parse(event.target.result);
+                confirmarImportacao(dadosImportados);
+            } catch (error) {
+                alert('Erro ao ler o arquivo. Certifique-se de que é um arquivo JSON válido.');
+            }
+        };
+        reader.readAsText(file);
+    };
+}
+
+function confirmarImportacao(dados) {
+    const currentUser = getCurrentUser();
+    if (!currentUser) {
+        alert('Faça login para importar dados.');
+        return;
+    }
+
+    if (confirm(`Importar dados de ${dados.usuario}?\nIsso substituirá seus dados atuais.`)) {
+        if (!dados.usuario || !dados.dataExportacao) {
+            alert('Arquivo inválido. Use um backup exportado do Codex.');
+            return;
+        }
+
+        localStorage.setItem(`tarefasPermanentes_${currentUser}`, JSON.stringify(dados.tarefasPermanentes || []));
+        localStorage.setItem(`tarefasDiarias_${currentUser}`, JSON.stringify(dados.tarefasDiarias || []));
+        localStorage.setItem(`notas_${currentUser}`, JSON.stringify(dados.notas || []));
+        localStorage.setItem(`tarefasAdicionais_${currentUser}`, JSON.stringify(dados.tarefasAdicionais || []));
+        localStorage.setItem(`links_${currentUser}`, JSON.stringify(dados.links || []));
+        localStorage.setItem(`anotacoes_${currentUser}`, JSON.stringify(dados.anotacoes || []));
+        localStorage.setItem(`pontos_${currentUser}`, dados.pontos || '0');
+
+        loadAll();
+        alert('Dados importados com sucesso!');
+    }
+
+    document.getElementById('import-file').value = '';
+}
+
 // Inicialização
 window.onload = () => {
     loadUserList();
@@ -672,18 +753,18 @@ window.onload = () => {
         localStorage.setItem('pontos_ParakeetPH12', '0');
         loadUserList();
     }
-    
+
     // VERIFICAÇÃO DE AUTENTICAÇÃO
     checkPageAuth();
-    
+
     // Inicializações específicas de cada página
     initWhiteboard();
     carregarAnotacoes();
-    
+
     if (document.getElementById('calendar')) {
         generateCalendar();
     }
-    
+
     window.addEventListener('resize', () => {
         if (document.getElementById('drawer-content')?.classList.contains('active')) {
             const calendar = document.getElementById('calendar');
@@ -694,6 +775,7 @@ window.onload = () => {
         }
     });
 };
+
 function loadAll() {
     carregarTarefasDiarias();
     carregarDados();
