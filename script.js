@@ -743,15 +743,7 @@ window.onload = () => {
     loadUserList();
     const users = getUsers();
     if (users.length === 0) {
-        saveUsers([{ username: 'ParakeetPH12', password: '157751' }]);
-        localStorage.setItem('tarefasPermanentes_ParakeetPH12', JSON.stringify([]));
-        localStorage.setItem('tarefasDiarias_ParakeetPH12', JSON.stringify([]));
-        localStorage.setItem('notas_ParakeetPH12', JSON.stringify([]));
-        localStorage.setItem('tarefasAdicionais_ParakeetPH12', JSON.stringify([]));
-        localStorage.setItem('links_ParakeetPH12', JSON.stringify([]));
-        localStorage.setItem('anotacoes_ParakeetPH12', JSON.stringify([]));
-        localStorage.setItem('pontos_ParakeetPH12', '0');
-        loadUserList();
+        
     }
 
     // VERIFICAÇÃO DE AUTENTICAÇÃO
