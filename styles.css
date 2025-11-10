@@ -282,7 +282,6 @@ input[type="range"] {
     align-items: center;
     justify-content: space-between;
 }
-
 nav {
     background-color: #000000;
     padding: 10px;
@@ -303,14 +302,11 @@ nav a:hover {
     color: #0066ff;
     text-shadow: 0 0 5px #0066ff;
 }
-
 .drawing-tools {
     display: flex;
     gap: 10px;
     margin-bottom: 15px;
 }
-
-
 #whiteboard {
     background-color: #ffffff;
     border: 1px solid #0066ff;
@@ -322,7 +318,6 @@ nav a:hover {
     width: 100%;
     height: auto;
 }
-
 .whiteboard-container {
     width: 100%;
     overflow: auto; 
@@ -331,7 +326,6 @@ nav a:hover {
     border-radius: 5px;
     background-color: #000000;
 }
-
 #diario-texto {
     height: 200px;
     resize: vertical;
@@ -345,7 +339,6 @@ nav a:hover {
     font-size: 12px;
     padding: 5px 10px;
 }
-
 #contact-form {
     display: flex;
     flex-direction: column;
@@ -364,7 +357,6 @@ nav a:hover {
     display: none;
     text-align: center;
 }
-
 input[type="email"] {
     background-color: #000000;
     color: #ffffff;
@@ -375,7 +367,6 @@ input[type="email"] {
     margin-bottom: 10px;
     box-shadow: 0 0 5px #0066ff, 0 0 10px #0066ff;
 }
-
 .canvas-controls {
     display: flex;
     gap: 10px;
@@ -387,12 +378,10 @@ input[type="email"] {
     border: 1px solid #0066ff;
     border-radius: 5px;
 }
-
 .canvas-controls label {
     color: #ffffff;
     font-size: 14px;
 }
-
 .canvas-controls input {
     background-color: #000000;
     color: #ffffff;
@@ -401,7 +390,6 @@ input[type="email"] {
     padding: 5px;
     width: 80px;
 }
-
 .whiteboard-container {
     max-height: 70vh;
     overflow: auto;
@@ -410,41 +398,143 @@ input[type="email"] {
     padding: 10px;
     background-color: #1a1a1a;
 }
-
-/* Scrollbar customizada */
 .whiteboard-container::-webkit-scrollbar {
     width: 12px;
     height: 12px;
 }
-
 .whiteboard-container::-webkit-scrollbar-track {
     background: #000000;
     border-radius: 6px;
 }
-
 .whiteboard-container::-webkit-scrollbar-thumb {
     background: #0066ff;
     border-radius: 6px;
 }
-
 .whiteboard-container::-webkit-scrollbar-thumb:hover {
     background: #0044cc;
 }
-
 .export-btn {
     background-color: #28a745;
 }
-
 .import-btn {
     background-color: #17a2b8;
 }
-
 .export-btn:hover {
     background-color: #218838;
     box-shadow: 0 0 15px #28a745, 0 0 30px #28a745;
 }
-
 .import-btn:hover {
     background-color: #138496;
     box-shadow: 0 0 15px #17a2b8, 0 0 30px #17a2b8;
+}
+
+/* --- Calendário Responsivo + Eventos + Modal (Sem Comentários) --- */
+
+@media (max-width: 768px) {
+    .calendar {
+        grid-template-columns: repeat(7, 1fr);
+        gap: 1px;
+        padding: 5px;
+        aspect-ratio: unset;
+        height: auto;
+        min-height: 300px;
+    }
+    .calendar-day {
+        font-size: 12px;
+        padding: 5px 2px;
+        min-height: 35px;
+    }
+    .calendar-header {
+        font-size: 11px;
+        padding: 5px 2px;
+    }
+    #calendar-controls {
+        flex-direction: column;
+        gap: 10px;
+    }
+    .drawer-controls {
+        flex-direction: column;
+    }
+    .drawer-control-group {
+        justify-content: space-between;
+        width: 100%;
+    }
+}
+@media (max-width: 480px) {
+    .calendar-day {
+        font-size: 10px;
+        min-height: 30px;
+    }
+    .calendar-header {
+        font-size: 9px;
+    }
+}
+.day-events {
+    margin-top: 2px;
+    min-height: 15px;
+}
+.event-indicator {
+    background: #0066ff;
+    color: white;
+    font-size: 9px;
+    padding: 1px 4px;
+    border-radius: 3px;
+    cursor: pointer;
+}
+.day-number {
+    font-weight: bold;
+}
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0,0,0,0.8);
+}
+.modal-content {
+    background-color: #000000;
+    margin: 10% auto;
+    padding: 20px;
+    border: 2px solid #0066ff;
+    border-radius: 10px;
+    width: 90%;
+    max-width: 400px;
+    color: white;
+    box-shadow: 0 0 20px #0066ff;
+}
+.evento-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px;
+    margin: 5px 0;
+    background: #1a1a1a;
+    border-radius: 5px;
+    border: 1px solid #0066ff;
+}
+.novo-evento {
+    display: flex;
+    gap: 10px;
+    margin: 15px 0;
+}
+.novo-evento input {
+    flex: 1;
+    background: #000000;
+    color: white;
+    border: 1px solid #0066ff;
+    padding: 8px;
+    border-radius: 5px;
+}
+@media (max-width: 768px) {
+    .modal-content {
+        margin: 5% auto;
+        width: 95%;
+        padding: 15px;
+    }
+    .novo-evento {
+        flex-direction: column;
+    }
 }
