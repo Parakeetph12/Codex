@@ -63,7 +63,7 @@ function registerUser() {
     localStorage.setItem(`notas_${username}`, JSON.stringify([]));
     localStorage.setItem(`tarefasAdicionais_${username}`, JSON.stringify([]));
     localStorage.setItem(`links_${username}`, JSON.stringify([]));
-    localStorage.setItem(`anotacoes_${username}`, JSON.stringify([])); // Para o diário
+    localStorage.setItem(`anotacoes_${username}`, JSON.stringify([]));
     localStorage.setItem(`pontos_${username}`, '0');
     document.getElementById('new-username').value = '';
     document.getElementById('new-password').value = '';
@@ -73,8 +73,6 @@ function registerUser() {
 }
 
 // Funções de autenticação
-
-// Função para verificar estado de autenticação
 function checkAuthState() {
     const currentUser = getCurrentUser();
     const loginContainer = document.getElementById('login-container');
@@ -83,14 +81,12 @@ function checkAuthState() {
     const nav = document.querySelector('nav');
 
     if (currentUser) {
-        // Usuário está logado - mostrar conteúdo
         if (loginContainer) loginContainer.style.display = 'none';
         if (mainSections) mainSections.style.display = 'flex';
         if (drawerContainer) drawerContainer.style.display = 'block';
         if (nav) nav.style.display = 'flex';
-        loadAll(); // Carregar dados do usuário
+        loadAll();
     } else {
-        // Usuário não está logado - mostrar login
         if (loginContainer) loginContainer.style.display = 'block';
         if (mainSections) mainSections.style.display = 'none';
         if (drawerContainer) drawerContainer.style.display = 'none';
@@ -98,18 +94,15 @@ function checkAuthState() {
     }
 }
 
-// Verificação de autenticação para páginas sem login
 function checkPageAuth() {
     const currentUser = getCurrentUser();
     const hasLoginContainer = document.getElementById('login-container');
 
-    // Se é uma página sem login container mas usuário não está logado
     if (!hasLoginContainer && !currentUser) {
         window.location.href = 'index.html';
         return false;
     }
 
-    // Se é a página inicial com login container
     if (hasLoginContainer && currentUser) {
         checkAuthState();
     }
@@ -135,7 +128,7 @@ function login() {
 
 function logout() {
     localStorage.removeItem('currentUser');
-    checkAuthState(); // Usar a nova função
+    checkAuthState();
     document.getElementById('username').value = '';
     document.getElementById('password').value = '';
     document.getElementById('gerenciar-tarefas').style.display = 'none';
@@ -348,6 +341,107 @@ function adicionarLink() {
     }
 }
 
+// Sistema de Eventos do Calendário
+function getEventosKey() {
+    return getUserKey('eventosCalendario');
+}
+
+function carregarEventosDoDia(data, container) {
+    const eventos = JSON.parse(localStorage.getItem(getEventosKey())) || {};
+    const eventosDoDia = eventos[data] || [];
+    
+    container.innerHTML = '';
+    
+    if (eventosDoDia.length > 0) {
+        const eventIndicator = document.createElement('div');
+        eventIndicator.className = 'event-indicator';
+        eventIndicator.textContent = `${eventosDoDia.length} evento(s)`;
+        eventIndicator.title = eventosDoDia.join(', ');
+        container.appendChild(eventIndicator);
+    }
+}
+
+function abrirModalEventos(dataCompleta, dia, mes, ano) {
+    const eventos = JSON.parse(localStorage.getItem(getEventosKey())) || {};
+    const eventosDoDia = eventos[dataCompleta] || [];
+    
+    let modal = document.getElementById('eventos-modal');
+    if (!modal) {
+        modal = document.createElement('div');
+        modal.id = 'eventos-modal';
+        modal.className = 'modal';
+        document.body.appendChild(modal);
+    }
+    
+    modal.innerHTML = `
+        <div class="modal-content">
+            <h3>Eventos - ${dia}/${mes + 1}/${ano}</h3>
+            <div id="lista-eventos">
+                ${eventosDoDia.map((evento, index) => `
+                    <div class="evento-item">
+                        <span>${evento}</span>
+                        <button onclick="removerEvento('${dataCompleta}', ${index})">🗑️</button>
+                    </div>
+                `).join('')}
+                ${eventosDoDia.length === 0 ? '<p>Nenhum evento</p>' : ''}
+            </div>
+            <div class="novo-evento">
+                <input type="text" id="novo-evento-texto" placeholder="Novo evento...">
+                <button onclick="adicionarEvento('${dataCompleta}')">➕ Adicionar</button>
+            </div>
+            <button onclick="fecharModal()">Fechar</button>
+        </div>
+    `;
+    
+    modal.style.display = 'block';
+}
+
+function adicionarEvento(data) {
+    const texto = document.getElementById('novo-evento-texto').value.trim();
+    if (!texto) return;
+    
+    const eventos = JSON.parse(localStorage.getItem(getEventosKey())) || {};
+    if (!eventos[data]) {
+        eventos[data] = [];
+    }
+    
+    eventos[data].push(texto);
+    localStorage.setItem(getEventosKey(), JSON.stringify(eventos));
+    
+    generateCalendar();
+    abrirModalEventos(
+        data, 
+        parseInt(data.split('-')[2]),
+        parseInt(data.split('-')[1]) - 1,
+        parseInt(data.split('-')[0])
+    );
+}
+
+function removerEvento(data, index) {
+    const eventos = JSON.parse(localStorage.getItem(getEventosKey())) || {};
+    if (eventos[data]) {
+        eventos[data].splice(index, 1);
+        if (eventos[data].length === 0) {
+            delete eventos[data];
+        }
+        localStorage.setItem(getEventosKey(), JSON.stringify(eventos));
+        generateCalendar();
+        abrirModalEventos(
+            data,
+            parseInt(data.split('-')[2]),
+            parseInt(data.split('-')[1]) - 1,
+            parseInt(data.split('-')[0])
+        );
+    }
+}
+
+function fecharModal() {
+    const modal = document.getElementById('eventos-modal');
+    if (modal) {
+        modal.style.display = 'none';
+    }
+}
+
 // Funções do calendário
 function toggleDrawer() {
     const drawerContent = document.getElementById('drawer-content');
@@ -358,16 +452,21 @@ function toggleDrawer() {
         ajustarTamanhoTela();
     }
 }
+
 let currentDate = new Date();
 let currentMonth = currentDate.getMonth();
 let currentYear = currentDate.getFullYear();
+
 function generateCalendar() {
     const calendar = document.getElementById('calendar');
     const monthYear = document.getElementById('calendar-month-year');
     if (!calendar || !monthYear) return;
+    
     calendar.innerHTML = '';
+    
     const monthNames = ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'];
     monthYear.textContent = `${monthNames[currentMonth]} ${currentYear}`;
+    
     const daysOfWeek = ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb'];
     daysOfWeek.forEach(day => {
         const header = document.createElement('div');
@@ -375,46 +474,45 @@ function generateCalendar() {
         header.textContent = day;
         calendar.appendChild(header);
     });
+    
     const firstDay = new Date(currentYear, currentMonth, 1).getDay();
     const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
+    
     for (let i = 0; i < firstDay; i++) {
         const emptyDay = document.createElement('div');
         emptyDay.className = 'calendar-day empty';
         calendar.appendChild(emptyDay);
     }
+    
     for (let day = 1; day <= daysInMonth; day++) {
         const dayElement = document.createElement('div');
         dayElement.className = 'calendar-day';
-        dayElement.textContent = day;
+        
+        const fullDate = `${currentYear}-${(currentMonth + 1).toString().padStart(2, '0')}-${day.toString().padStart(2, '0')}`;
+        dayElement.setAttribute('data-date', fullDate);
+        
+        const dayNumber = document.createElement('div');
+        dayNumber.className = 'day-number';
+        dayNumber.textContent = day;
+        dayElement.appendChild(dayNumber);
+        
+        const eventsContainer = document.createElement('div');
+        eventsContainer.className = 'day-events';
+        dayElement.appendChild(eventsContainer);
+        
+        carregarEventosDoDia(fullDate, eventsContainer);
+        
         const today = new Date();
         if (day === today.getDate() && currentMonth === today.getMonth() && currentYear === today.getFullYear()) {
             dayElement.classList.add('current');
         }
-        dayElement.onclick = () => {
-            let notification = document.getElementById('calendar-notification');
-            if (!notification) {
-                notification = document.createElement('div');
-                notification.id = 'calendar-notification';
-                notification.style.position = 'fixed';
-                notification.style.bottom = '20px';
-                notification.style.left = '50%';
-                notification.style.transform = 'translateX(-50%)';
-                notification.style.background = '#333';
-                notification.style.color = '#fff';
-                notification.style.padding = '10px 20px';
-                notification.style.borderRadius = '5px';
-                notification.style.zIndex = '1000';
-                document.body.appendChild(notification);
-            }
-            notification.textContent = `Dia selecionado: ${day}/${currentMonth + 1}/${currentYear}`;
-            notification.style.display = 'block';
-            setTimeout(() => {
-                notification.style.display = 'none';
-            }, 2000);
-        };
+        
+        dayElement.onclick = () => abrirModalEventos(fullDate, day, currentMonth, currentYear);
+        
         calendar.appendChild(dayElement);
     }
 }
+
 function previousMonth() {
     currentMonth--;
     if (currentMonth < 0) {
@@ -423,6 +521,7 @@ function previousMonth() {
     }
     generateCalendar();
 }
+
 function nextMonth() {
     currentMonth++;
     if (currentMonth > 11) {
@@ -431,6 +530,7 @@ function nextMonth() {
     }
     generateCalendar();
 }
+
 function ajustarTamanhoTela() {
     const largura = Math.min(parseInt(document.getElementById('largura-tela')?.value) || 800, 2000);
     const altura = Math.min(parseInt(document.getElementById('altura-tela')?.value) || 500, 1000);
@@ -441,6 +541,7 @@ function ajustarTamanhoTela() {
         generateCalendar();
     }
 }
+
 function atualizarPontos() {
     const pontos = localStorage.getItem(getUserKey('pontos')) || '0';
     const pontosElement = document.getElementById('pontos');
@@ -457,7 +558,6 @@ let tamanhoTraco = 2;
 let corDesenho = '#000000';
 let modoBorracha = false;
 
-// Inicializa o canvas
 function inicializarCanvas() {
     if (!canvas || !ctx) {
         console.error('Canvas ou contexto não encontrado');
@@ -469,7 +569,6 @@ function inicializarCanvas() {
     ctx.fillRect(0, 0, canvas.width, canvas.height);
 }
 
-// Funções de controle
 function setColor(cor) {
     corDesenho = cor;
     modoBorracha = false;
@@ -499,29 +598,25 @@ function resizeCanvas() {
     const largura = Math.min(parseInt(document.getElementById('canvas-width')?.value) || 1200, 2000);
     const altura = Math.min(parseInt(document.getElementById('canvas-height')?.value) || 800, 1500);
 
-    // Salva o conteúdo atual
     const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
 
-    // Aplica novo tamanho
     canvas.style.width = largura + 'px';
     canvas.style.height = altura + 'px';
     canvas.width = largura;
     canvas.height = altura;
 
-    // Restaura o conteúdo
     ctx.fillStyle = '#ffffff';
     ctx.fillRect(0, 0, canvas.width, canvas.height);
     ctx.putImageData(imageData, 0, 0);
 }
 
-// Eventos de desenho
 if (canvas) {
-    document.getElementById('tamanho-traco').addEventListener('input', (e) => {
+    document.getElementById('tamanho-traco')?.addEventListener('input', (e) => {
         tamanhoTraco = parseInt(e.target.value);
     });
 
     canvas.addEventListener('mousedown', (e) => {
-        if (e.button !== 0) return; // Apenas botão esquerdo
+        if (e.button !== 0) return;
         desenhando = true;
         ctx.beginPath();
         ctx.moveTo(e.offsetX, e.offsetY);
@@ -545,7 +640,6 @@ if (canvas) {
         desenhando = false;
     });
 
-    // Inicializa o canvas
     inicializarCanvas();
 }
 
@@ -564,24 +658,20 @@ function carregarAnotacoes() {
         li.style.border = '1px solid #0066ff';
         li.style.borderRadius = '5px';
 
-        // TÍTULO
         const titulo = document.createElement('h4');
         titulo.textContent = anotacao.titulo || 'Sem título';
         titulo.style.margin = '0 0 5px 0';
         titulo.style.color = '#0066ff';
 
-        // TEXTO
         const texto = document.createElement('p');
         texto.textContent = anotacao.texto || anotacao;
         texto.style.margin = '0 0 5px 0';
         texto.style.color = '#ffffff';
 
-        // DATA
         const data = document.createElement('small');
         data.textContent = anotacao.data ? `Criado em: ${anotacao.data}` : '';
         data.style.color = '#888';
 
-        // BOTÃO EXCLUIR
         const botaoExcluir = document.createElement('button');
         botaoExcluir.textContent = 'Excluir';
         botaoExcluir.style.marginLeft = '10px';
@@ -598,7 +688,7 @@ function carregarAnotacoes() {
 function salvarAnotacao() {
     const titulo = document.getElementById('diario-titulo')?.value.trim();
     const texto = document.getElementById('diario-texto')?.value.trim();
-    
+
     if (texto) {
         const anotacoes = JSON.parse(localStorage.getItem(getUserKey('anotacoes')) || '[]');
         anotacoes.push({
@@ -671,7 +761,8 @@ function exportarDados() {
         tarefasAdicionais: JSON.parse(localStorage.getItem(`tarefasAdicionais_${currentUser}`) || '[]'),
         links: JSON.parse(localStorage.getItem(`links_${currentUser}`) || '[]'),
         anotacoes: JSON.parse(localStorage.getItem(`anotacoes_${currentUser}`) || '[]'),
-        pontos: localStorage.getItem(`pontos_${currentUser}`) || '0'
+        pontos: localStorage.getItem(`pontos_${currentUser}`) || '0',
+        eventosCalendario: JSON.parse(localStorage.getItem(`eventosCalendario_${currentUser}`) || '{}')
     };
 
     const dadosJSON = JSON.stringify(dadosParaExportar, null, 2);
@@ -730,6 +821,7 @@ function confirmarImportacao(dados) {
         localStorage.setItem(`links_${currentUser}`, JSON.stringify(dados.links || []));
         localStorage.setItem(`anotacoes_${currentUser}`, JSON.stringify(dados.anotacoes || []));
         localStorage.setItem(`pontos_${currentUser}`, dados.pontos || '0');
+        localStorage.setItem(`eventosCalendario_${currentUser}`, JSON.stringify(dados.eventosCalendario || {}));
 
         loadAll();
         alert('Dados importados com sucesso!');
@@ -743,13 +835,11 @@ window.onload = () => {
     loadUserList();
     const users = getUsers();
     if (users.length === 0) {
-        
+        // Não cria usuário padrão
     }
 
-    // VERIFICAÇÃO DE AUTENTICAÇÃO
     checkPageAuth();
 
-    // Inicializações específicas de cada página
     initWhiteboard();
     carregarAnotacoes();
 
