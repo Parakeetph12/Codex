@@ -5,6 +5,7 @@ body {
     margin: 0;
     padding: 0;
 }
+
 header {
     background-color: #000000;
     color: #0066ff;
@@ -12,10 +13,12 @@ header {
     text-align: center;
     text-shadow: 0 0 10px #0066ff, 0 0 20px #0066ff;
 }
+
 h1, h2, h3, h4 {
     color: #0066ff;
     text-shadow: 0 0 10px #0066ff, 0 0 20px #0066ff;
 }
+
 #tarefas-diarias {
     flex: 1;
     overflow-y: auto;
@@ -23,6 +26,7 @@ h1, h2, h3, h4 {
     margin: 0;
     list-style: none;
 }
+
 #tarefas-diarias li {
     display: flex;
     align-items: center;
@@ -33,14 +37,16 @@ h1, h2, h3, h4 {
     border-radius: 5px;
     box-shadow: 0 0 5px #0066ff, 0 0 10px #0066ff;
 }
+
 .main-sections {
-    display: none;
-    justify-content: space-between;
+    display: flex;
+    justify-content: center;
     padding: 20px;
     gap: 20px;
-    flex-wrap: nowrap;
+    flex-wrap: wrap;
     overflow-x: auto;
 }
+
 .fixed-section {
     flex: 1;
     min-width: 250px;
@@ -54,12 +60,14 @@ h1, h2, h3, h4 {
     flex-direction: column;
     height: fit-content;
 }
+
 ul {
     list-style-type: none;
     padding: 0;
     max-height: 200px;
     overflow-y: auto;
 }
+
 ul li {
     background: #000000;
     color: #ffffff;
@@ -68,9 +76,11 @@ ul li {
     border-radius: 5px;
     box-shadow: 0 0 5px #ffffff, 0 0 10px #ffffff;
 }
+
 input[type="text"], 
 input[type="password"], 
-input[type="number"] {
+input[type="number"],
+input[type="email"] {
     background-color: #000000;
     color: #ffffff;
     border: 1px solid #0066ff;
@@ -80,6 +90,7 @@ input[type="number"] {
     margin-bottom: 10px;
     box-shadow: 0 0 5px #0066ff, 0 0 10px #0066ff;
 }
+
 button {
     background-color: #5293f5;
     color: #ffffff;
@@ -91,15 +102,18 @@ button {
     box-shadow: 0 0 10px #0066ff, 0 0 20px #0066ff;
     transition: all 0.3s ease;
 }
+
 button:hover {
     background-color: #0066ff;
     box-shadow: 0 0 15px #0066ff, 0 0 30px #0066ff;
 }
+
 .drawer-container {
     width: calc(100% - 40px);
-    margin: 20px;
+    margin: 20px auto;
     display: none;
 }
+
 .drawer-header {
     background-color: #000000;
     color: #0066ff;
@@ -112,6 +126,7 @@ button:hover {
     align-items: center;
     box-shadow: 0 0 5px #0066ff;
 }
+
 .drawer-content {
     display: none;
     padding: 15px;
@@ -120,24 +135,29 @@ button:hover {
     border-top: none;
     border-radius: 0 0 5px 5px;
 }
+
 .drawer-content.active {
     display: block;
 }
+
 .drawer-controls {
     display: flex;
     flex-wrap: wrap;
     gap: 10px;
     margin-bottom: 10px;
 }
+
 .drawer-control-group {
     display: flex;
     align-items: center;
     gap: 5px;
 }
+
 label {
     color: #ffffff;
     font-size: 14px;
 }
+
 select,
 input[type="range"] {
     background-color: #000000;
@@ -146,12 +166,14 @@ input[type="range"] {
     padding: 5px;
     border-radius: 3px;
 }
+
 .drawer-buttons {
     display: flex;
     gap: 10px;
     justify-content: center;
     margin-top: 10px;
 }
+
 #login-container {
     position: absolute;
     top: 50%;
@@ -164,14 +186,17 @@ input[type="range"] {
     width: 400px;
     max-width: 90%;
 }
+
 #login-form {
     display: flex;
     flex-direction: column;
 }
+
 #login-form input {
     margin-bottom: 10px;
     padding: 8px;
 }
+
 #user-list {
     margin-bottom: 15px;
     max-height: 150px;
@@ -180,6 +205,7 @@ input[type="range"] {
     border-radius: 5px;
     padding: 5px;
 }
+
 #user-list li {
     padding: 8px;
     cursor: pointer;
@@ -187,35 +213,31 @@ input[type="range"] {
     margin-bottom: 3px;
     transition: background-color 0.2s;
 }
+
 #user-list li:hover {
     background-color: #0066ff33;
 }
+
 #new-user-section {
     margin-top: 15px;
     border-top: 1px solid #0066ff;
     padding-top: 15px;
 }
+
 #login-error,
 #register-error {
     color: red;
     display: none;
     text-align: center;
 }
+
 #register-success {
     color: #00ff00;
     display: none;
     text-align: center;
 }
-@media (max-width: 1200px) {
-    .main-sections {
-        flex-wrap: nowrap;
-        overflow-x: auto;
-    }
-    .fixed-section {
-        flex: 0 0 auto;
-        min-width: 300px;
-    }
-}
+
+/* --- Calendário --- */
 .calendar {
     display: grid;
     grid-template-columns: repeat(7, 1fr);
@@ -226,9 +248,12 @@ input[type="range"] {
     padding: 10px;
     width: 100%;
     max-width: 800px;
-    aspect-ratio: 8/5;
+    margin: 0 auto;
+    aspect-ratio: auto;
     box-shadow: 0 0 10px #0066ff, 0 0 20px #0066ff;
+    box-sizing: border-box;
 }
+
 .calendar-day {
     background-color: #000000;
     color: #ffffff;
@@ -241,18 +266,22 @@ input[type="range"] {
     cursor: pointer;
     transition: background-color 0.2s;
 }
+
 .calendar-day:hover {
     background-color: #0066ff33;
 }
+
 .calendar-day.current {
     background-color: #0066ff;
     box-shadow: 0 0 5px #0066ff, 0 0 10px #0066ff;
 }
+
 .calendar-day.empty {
     background-color: transparent;
     border: none;
     cursor: default;
 }
+
 .calendar-header {
     background-color: #000000;
     color: #0066ff;
@@ -260,183 +289,27 @@ input[type="range"] {
     padding: 10px;
     font-weight: bold;
 }
+
 #calendar-controls {
     display: flex;
     justify-content: space-between;
     align-items: center;
     margin-bottom: 10px;
+    flex-wrap: wrap;
 }
+
 #calendar-month-year {
     font-size: 16px;
     color: #0066ff;
     text-shadow: 0 0 5px #0066ff;
 }
-#gerenciar-tarefas {
-    margin-top: 10px;
-    padding: 10px;
-    border: 1px solid #0066ff;
-    border-radius: 5px;
-}
-#lista-tarefas-gerenciar li {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-}
-nav {
-    background-color: #000000;
-    padding: 10px;
-    border-bottom: 1px solid #0066ff;
-    box-shadow: 0 0 10px #0066ff;
-    display: flex;
-    justify-content: center;
-    gap: 20px;
-}
-nav a {
-    color: #ffffff;
-    text-decoration: none;
-    font-size: 16px;
-    padding: 10px;
-    transition: color 0.3s ease;
-}
-nav a:hover {
-    color: #0066ff;
-    text-shadow: 0 0 5px #0066ff;
-}
-.drawing-tools {
-    display: flex;
-    gap: 10px;
-    margin-bottom: 15px;
-}
-#whiteboard {
-    background-color: #ffffff;
-    border: 1px solid #0066ff;
-    border-radius: 5px;
-    box-shadow: 0 0 10px #0066ff;
-    cursor: crosshair;
-    max-width: 100%;
-    max-height: 70vh; 
-    width: 100%;
-    height: auto;
-}
-.whiteboard-container {
-    width: 100%;
-    overflow: auto; 
-    padding: 10px;
-    border: 1px solid #0066ff;
-    border-radius: 5px;
-    background-color: #000000;
-}
-#diario-texto {
-    height: 200px;
-    resize: vertical;
-}
-#lista-anotacoes li {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-#lista-anotacoes li button {
-    font-size: 12px;
-    padding: 5px 10px;
-}
-#contact-form {
-    display: flex;
-    flex-direction: column;
-}
-#contact-message {
-    height: 150px;
-    resize: vertical;
-}
-#contact-error {
-    color: red;
-    display: none;
-    text-align: center;
-}
-#contact-success {
-    color: #00ff00;
-    display: none;
-    text-align: center;
-}
-input[type="email"] {
-    background-color: #000000;
-    color: #ffffff;
-    border: 1px solid #0066ff;
-    border-radius: 5px;
-    padding: 10px;
-    width: calc(100% - 22px);
-    margin-bottom: 10px;
-    box-shadow: 0 0 5px #0066ff, 0 0 10px #0066ff;
-}
-.canvas-controls {
-    display: flex;
-    gap: 10px;
-    margin-top: 15px;
-    flex-wrap: wrap;
-    align-items: center;
-    padding: 10px;
-    background-color: #000000;
-    border: 1px solid #0066ff;
-    border-radius: 5px;
-}
-.canvas-controls label {
-    color: #ffffff;
-    font-size: 14px;
-}
-.canvas-controls input {
-    background-color: #000000;
-    color: #ffffff;
-    border: 1px solid #0066ff;
-    border-radius: 3px;
-    padding: 5px;
-    width: 80px;
-}
-.whiteboard-container {
-    max-height: 70vh;
-    overflow: auto;
-    border: 1px solid #0066ff;
-    border-radius: 5px;
-    padding: 10px;
-    background-color: #1a1a1a;
-}
-.whiteboard-container::-webkit-scrollbar {
-    width: 12px;
-    height: 12px;
-}
-.whiteboard-container::-webkit-scrollbar-track {
-    background: #000000;
-    border-radius: 6px;
-}
-.whiteboard-container::-webkit-scrollbar-thumb {
-    background: #0066ff;
-    border-radius: 6px;
-}
-.whiteboard-container::-webkit-scrollbar-thumb:hover {
-    background: #0044cc;
-}
-.export-btn {
-    background-color: #28a745;
-}
-.import-btn {
-    background-color: #17a2b8;
-}
-.export-btn:hover {
-    background-color: #218838;
-    box-shadow: 0 0 15px #28a745, 0 0 30px #28a745;
-}
-.import-btn:hover {
-    background-color: #138496;
-    box-shadow: 0 0 15px #17a2b8, 0 0 30px #17a2b8;
-}
 
-/* --- Calendário Responsivo + Eventos + Modal (Sem Comentários) --- */
-
+/* Responsividade */
 @media (max-width: 768px) {
     .calendar {
         grid-template-columns: repeat(7, 1fr);
         gap: 1px;
         padding: 5px;
-        aspect-ratio: unset;
-        height: auto;
         min-height: 300px;
     }
     .calendar-day {
@@ -452,14 +325,8 @@ input[type="email"] {
         flex-direction: column;
         gap: 10px;
     }
-    .drawer-controls {
-        flex-direction: column;
-    }
-    .drawer-control-group {
-        justify-content: space-between;
-        width: 100%;
-    }
 }
+
 @media (max-width: 480px) {
     .calendar-day {
         font-size: 10px;
@@ -467,74 +334,5 @@ input[type="email"] {
     }
     .calendar-header {
         font-size: 9px;
-    }
-}
-.day-events {
-    margin-top: 2px;
-    min-height: 15px;
-}
-.event-indicator {
-    background: #0066ff;
-    color: white;
-    font-size: 9px;
-    padding: 1px 4px;
-    border-radius: 3px;
-    cursor: pointer;
-}
-.day-number {
-    font-weight: bold;
-}
-.modal {
-    display: none;
-    position: fixed;
-    z-index: 1000;
-    left: 0;
-    top: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0,0,0,0.8);
-}
-.modal-content {
-    background-color: #000000;
-    margin: 10% auto;
-    padding: 20px;
-    border: 2px solid #0066ff;
-    border-radius: 10px;
-    width: 90%;
-    max-width: 400px;
-    color: white;
-    box-shadow: 0 0 20px #0066ff;
-}
-.evento-item {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 8px;
-    margin: 5px 0;
-    background: #1a1a1a;
-    border-radius: 5px;
-    border: 1px solid #0066ff;
-}
-.novo-evento {
-    display: flex;
-    gap: 10px;
-    margin: 15px 0;
-}
-.novo-evento input {
-    flex: 1;
-    background: #000000;
-    color: white;
-    border: 1px solid #0066ff;
-    padding: 8px;
-    border-radius: 5px;
-}
-@media (max-width: 768px) {
-    .modal-content {
-        margin: 5% auto;
-        width: 95%;
-        padding: 15px;
-    }
-    .novo-evento {
-        flex-direction: column;
     }
 }
